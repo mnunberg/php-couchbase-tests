@@ -1,0 +1,17 @@
+SDK-testing provided tests for php-ext-couchbase:
+
+Usage:
+Build the php extension as normal.
+The runtests.pl script (which in the future, will actually run the tests :))
+will replace the upstream tests directory with the ones found here.
+
+You Something like:
+
+./runtests.pl -s ~/src/php-ext-couchbase/ -h 10.3.121.209
+
+Where -s is the source directory, and -h is the cluster entry point.
+
+Then you can chdir back to the php-ext-couchbase directory and run make-test
+as normal.
+
+M. Nunberg

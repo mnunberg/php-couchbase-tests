@@ -1,0 +1,5 @@
+<?php
+define("COUCHBASE_CONFIG_HOST", "10.3.121.209");
+define("COUCHBASE_CONFIG_USER", "");
+define("COUCHBASE_CONFIG_PASSWD", "");
+define("COUCHBASE_CONFIG_BUCKET", "");

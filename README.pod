@@ -1,0 +1,47 @@
+=head1 PHP Couchbase Tests
+
+This is an extensive testsuite for the PHP couchbase client. This is a
+work in progress to convert existing tests into the new format.
+
+=head2 Layout
+
+Currently there are tests in both C<tests> and C<unit>, where the former are the
+legacy phpt-style tests, and the latter are the new tests utilizing
+L<PHPUnit|https://github.com/sebastianbergmann/phpunit>
+
+=head2 Usage
+
+Build the php extension (i.e. C<php-ext-couchbase>) as normal.
+The runtests.pl script (which in the future, will actually run the tests :))
+will replace the upstream tests directory with the ones found here. These will
+run the legacy tests; so
+	./runtests.pl -s ~/src/php-ext-couchbase/ -h 10.3.121.209
+
+Where -s is the source directory, and -h is the cluster entry point.
+
+Then you can chdir back to the php-ext-couchbase directory and run make-test
+as normal.
+
+For the new-style tests, you should chdir into the C<unit> directory
+and run something like
+	
+	EXTDIR=~/src/php-ext-couchbase
+	./pwrap.sh -c test.xml
+
+The server parameters for the revised tests are currently hard coded in that directory's
+C<couchbase.local.inc>. Modify it as needed
+
+You need to have C<PHPUnit> installed for the new tests; the C<pwrap.sh> script is a
+wrapper around the C<phpunit> executable, which sets up the appropriate locations for
+finding the couchbase extension
+
+Additionally, it may be required to set up library paths for the couchbase.so extension
+to find libcouchbase itself. Therefore you might want to do something like
+
+	export LD_LIBRARY_PATH=$LCB_PREFIX/lib
+
+where C<$LCB_PREFIX> is the C<--prefix> which libcouchbase was configured with.
+
+On Darwin/OS X systems, the environment variable is C<DYLD_LIBRARY_PATH>.
+
+M. Nunberg

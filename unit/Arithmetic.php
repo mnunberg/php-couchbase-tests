@@ -1,11 +1,11 @@
 <?php
 
-/* This file replaces 010 */
+/* This file replaces 010 and 022 */
 
 require_once 'Common.php';
 class Arithmetic extends CouchbaseTestCommon
 {
-    function testIncrDecr() {
+    function testIncrDecrOO() {
         $oo = $this->oo;
         $key = $this->mk_key();
         $value = "2";
@@ -31,7 +31,29 @@ class Arithmetic extends CouchbaseTestCommon
         $this->assertEquals('2', $rv);        
     }
     
-    function testIncrString() {
+    function testIncrDecr() {
+        $h = $this->handle;
+        $key = $this->mk_key();
+        $value = "2";
+        couchbase_add($h, $key, $value);
+        $rv = couchbase_increment($h, $key);
+        $this->assertInternalType('int', $rv);
+        $this->assertEquals(3, $rv);
+        
+        $rv = couchbase_get($h, $key);
+        $this->assertInternalType('string', $rv);
+        $this->assertEquals('3', $rv);
+        
+        $rv = couchbase_decrement($h, $key);
+        $this->assertInternalType('int', $rv);
+        $this->assertEquals(2, $rv);
+        
+        $rv = couchbase_get($h, $key);
+        $this->assertInternalType('string', $rv);
+        $this->assertEquals('2', $rv);
+    }
+    
+    function testIncrStringOO() {
         $key = $this->mk_key();
         $oo = $this->oo;
         $oo->set($key, "String");
@@ -47,7 +69,22 @@ class Arithmetic extends CouchbaseTestCommon
         $this->assertContains("Not a number", $msg);
     }
     
-    function testIncrNonexist() {
+    function testIncrString() {
+        $key = $this->mk_key();
+        $h = $this->handle;
+        couchbase_set($h, $key, 'String');
+        
+        $msg = NULL;
+        try {
+            $rv = couchbase_increment($h, $key);
+        } catch (Exception $exc) {
+            $msg = $exc->getMessage();
+        }
+        $this->assertNotNull($msg);
+        $this->assertContains('Not a number', $msg);
+    }
+    
+    function testIncrDecrNonexistOO() {
         $key = $this->mk_key();
         $oo = $this->oo;
         
@@ -61,8 +98,67 @@ class Arithmetic extends CouchbaseTestCommon
                             "Value is set to the default rather than the offset");
         $rv = $oo->get($key);
         $this->assertEquals('2', $rv);
+        
+        $oo->delete($key);
+        
+        $msg = NULL;
+        try {
+            $oo->decrement($key, 2);
+        } catch (Exception $exc) {
+            $msg = $exc->getMessage();
+        }
+        $this->assertNotNull($msg);
+        $this->assertContains('No such key', $msg);
     }
-
+    
+    function testIncrDecrNonexist() {
+        $key = $this->mk_key();
+        $h = $this->handle;
+        $rv = couchbase_increment($h,
+                                  $key,
+                                  $offset = 1,
+                                  $create = true,
+                                  $expire = NULL,
+                                  $initial_value = 2);
+        $this->assertEquals(2, $rv);
+        
+        $rv = couchbase_get($h, $key);
+        $this->assertEquals('2', $rv);
+        
+        couchbase_delete($h, $key);
+        
+        $msg = NULL;
+        try {
+            couchbase_decrement($h, $key, 2);
+        } catch (Exception $exc) {
+            $msg = $exc->getMessage();
+        }
+        $this->assertNotNull($msg);
+        $this->assertContains('No such key', $msg);
+    }
+    
+    function testIncrDecrNonexistPositionalOO() {
+        $key = $this->mk_key();
+        $oo = $this->oo;
+        $rv = $oo->increment($key, 20, 1, 0, 2);
+        $this->assertEquals(2, $rv, "Set to initial value (incr)");
+        
+        $oo->delete($key);
+        $rv = $oo->decrement($key, 20, 1, 0, 2);
+        $this->assertEquals(2, $rv, "Set to initial value (Decr)");
+    }
+    
+    function testIncrDecrNonexistPositional() {
+        $key = $this->mk_key();
+        $h = $this->handle;
+        $rv = couchbase_increment($h, $key, 20, 1, 0, 2);
+        $this->assertEquals(2, $rv);
+        
+        couchbase_delete($h, $key);
+        
+        $rv = couchbase_decrement($h, $key, 20, 1, 0, 2);
+        $this->assertEquals(2, $rv);
+    }
 }
 
 ?>

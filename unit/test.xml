@@ -1,0 +1,15 @@
+<phpunit>
+	<testsuites>
+		<testsuite name="CommonTests">
+			<file>Connection.php</file>
+			<file>MutateBasic.php</file>
+			<file>Arithmetic.php</file>
+			<file>EmptyKey.php</file>
+			<file>MissCB.php</file>
+			<file>Errors.php</file>
+			<file>Delete.php</file>
+			<file>AppendPrepend.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>
+

@@ -21,7 +21,10 @@ function make_handle_oo() {
 
 class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
 {
-    protected function setUp() {
+    static $_handle = NULL;
+    static $_oo = NULL;
+    
+    protected function setUp() {        
         $this->handle = make_handle();
         $this->oo = make_handle_oo();
     }
@@ -31,7 +34,21 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         $this->oo->delete($key);
         return $key;
     }
-
+    
+    protected function getPersistHandle() {
+        if (!self::$_handle) {
+            self::$_handle = make_handle();
+        }
+        return self::$_handle;
+    }
+    
+    protected function getPersistOO() {
+        if (!self::$_oo) {
+            print "Creating new handle\n";
+            self::$_oo = make_handle_oo();
+        }
+        return self::$_oo;
+    }
 }
 
 ?>

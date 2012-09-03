@@ -9,6 +9,7 @@
 			<file>Errors.php</file>
 			<file>Delete.php</file>
 			<file>AppendPrepend.php</file>
+			<file>GetMulti.php</file>
 		</testsuite>
 	</testsuites>
 </phpunit>

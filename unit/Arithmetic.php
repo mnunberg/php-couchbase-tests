@@ -6,7 +6,7 @@ require_once 'Common.php';
 class Arithmetic extends CouchbaseTestCommon
 {
     function testIncrDecrOO() {
-        $oo = $this->oo;
+        $oo = $this->getPersistOO();
         $key = $this->mk_key();
         $value = "2";
         
@@ -32,7 +32,7 @@ class Arithmetic extends CouchbaseTestCommon
     }
     
     function testIncrDecr() {
-        $h = $this->handle;
+        $h = $this->getPersistHandle();
         $key = $this->mk_key();
         $value = "2";
         couchbase_add($h, $key, $value);
@@ -55,7 +55,7 @@ class Arithmetic extends CouchbaseTestCommon
     
     function testIncrStringOO() {
         $key = $this->mk_key();
-        $oo = $this->oo;
+        $oo = $this->getPersistOO();
         $oo->set($key, "String");
         
         $msg = NULL;
@@ -71,7 +71,7 @@ class Arithmetic extends CouchbaseTestCommon
     
     function testIncrString() {
         $key = $this->mk_key();
-        $h = $this->handle;
+        $h = $this->getPersistHandle();
         couchbase_set($h, $key, 'String');
         
         $msg = NULL;
@@ -86,7 +86,7 @@ class Arithmetic extends CouchbaseTestCommon
     
     function testIncrDecrNonexistOO() {
         $key = $this->mk_key();
-        $oo = $this->oo;
+        $oo = $this->getPersistOO();
         
         $rv = $oo->increment($key,
                              $offset = 1,
@@ -113,7 +113,7 @@ class Arithmetic extends CouchbaseTestCommon
     
     function testIncrDecrNonexist() {
         $key = $this->mk_key();
-        $h = $this->handle;
+        $h = $this->getPersistHandle();
         $rv = couchbase_increment($h,
                                   $key,
                                   $offset = 1,
@@ -139,7 +139,7 @@ class Arithmetic extends CouchbaseTestCommon
     
     function testIncrDecrNonexistPositionalOO() {
         $key = $this->mk_key();
-        $oo = $this->oo;
+        $oo = $this->getPersistOO();
         $rv = $oo->increment($key, 20, 1, 0, 2);
         $this->assertEquals(2, $rv, "Set to initial value (incr)");
         
@@ -150,7 +150,7 @@ class Arithmetic extends CouchbaseTestCommon
     
     function testIncrDecrNonexistPositional() {
         $key = $this->mk_key();
-        $h = $this->handle;
+        $h = $this->getPersistHandle();
         $rv = couchbase_increment($h, $key, 20, 1, 0, 2);
         $this->assertEquals(2, $rv);
         

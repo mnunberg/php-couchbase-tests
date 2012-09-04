@@ -111,4 +111,18 @@ class GetMulti extends CouchbaseTestCommon
         }
     }
     
+    # 032
+    function testMgetOrdered() {
+        # ensure keys are in order, if requested..
+        
+        $oo = $this->getPersistOO();
+        $values = $this->makeKvPairs(10);
+        $casrets = $oo->setMulti($values, 1);
+        asort($values);
+        
+        $keys = array_keys($values);
+        $res = $oo->getMulti($keys, $cas, Couchbase::GET_PRESERVE_ORDER);
+        $this->assertEquals(serialize($values), serialize($res));
+    }
+    
 }

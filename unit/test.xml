@@ -11,6 +11,9 @@
 			<file>AppendPrepend.php</file>
 			<file>GetMulti.php</file>
 			<file>Delay.php</file>
+			<file>ServerStats.php</file>
+			<file>Serialization.php</file>
+			<file>MiscOptions.php</file>
 		</testsuite>
 	</testsuites>
 </phpunit>

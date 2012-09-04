@@ -14,6 +14,7 @@
 			<file>ServerStats.php</file>
 			<file>Serialization.php</file>
 			<file>MiscOptions.php</file>
+			<file>Prefix.php</file>
 		</testsuite>
 	</testsuites>
 </phpunit>

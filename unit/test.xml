@@ -10,6 +10,7 @@
 			<file>Delete.php</file>
 			<file>AppendPrepend.php</file>
 			<file>GetMulti.php</file>
+			<file>Delay.php</file>
 		</testsuite>
 	</testsuites>
 </phpunit>

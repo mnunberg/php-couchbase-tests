@@ -49,6 +49,16 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         }
         return self::$_oo;
     }
+    
+    protected function makeKvPairs($count = 10) {
+        $ret = array();
+        for ($ii = 0; $ii < $count; $ii++) {
+            $k = $this->mk_key();
+            $v = uniqid("couchbase_value_");
+            $ret[$k] = $v;
+        }
+        return $ret;
+    }
 }
 
 ?>

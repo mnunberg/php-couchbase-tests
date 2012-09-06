@@ -5,7 +5,7 @@ require_once 'Common.php';
  *Basic connection tests, replaces 002, 028 036
  */
 
-class Connection extends PHPUnit_Framework_TestCase
+class Connection extends CouchbaseTestCommon
 {
     function testConnectBasic() {
         $handle = couchbase_connect(COUCHBASE_CONFIG_HOST,
@@ -57,6 +57,9 @@ class Connection extends PHPUnit_Framework_TestCase
     }
     
     function testConnectNodeArray() {
+        if (!$this->atLeastVersion(array(1,0,5))) {
+            return; // not implemented
+        }
         $hosts = array('non-existent-host',
                        'another-bogus-host',
                        COUCHBASE_CONFIG_HOST);
@@ -68,6 +71,26 @@ class Connection extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Couchbase', $cb);
     }
     
+    function testPersistentConnection() {
+        # PCBC-75
+        for ($ii = 0; $ii < 2; $ii++) {
+            $o =  couchbase_connect(COUCHBASE_CONFIG_HOST,
+                                COUCHBASE_CONFIG_USER,
+                                COUCHBASE_CONFIG_PASSWD,
+                                COUCHBASE_CONFIG_BUCKET,
+                                true);
+            $obj[$ii] = $o;
+        }
+                
+        $this->assertTrue(true, "No problems so far..");
+        
+        $this->markTestIncomplete(
+            "No way of verifying the objects are indentical");
+        
+        $this->assertEquals($obj[0], $obj[1],
+                            "Persistent connection returns ".
+                            "same resource object");
+    }
 }
 
 

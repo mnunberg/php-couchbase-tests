@@ -1,23 +1,7 @@
 <?php
 
 require_once 'PHPUnit.php';
-require_once 'couchbase.inc';
-
-function make_handle() {
-    $handle = couchbase_connect(COUCHBASE_CONFIG_HOST,
-                               COUCHBASE_CONFIG_USER,
-                               COUCHBASE_CONFIG_PASSWD,
-                               COUCHBASE_CONFIG_BUCKET);
-    return $handle;
-}
-
-function make_handle_oo() {
-    $oo = new Couchbase(COUCHBASE_CONFIG_HOST,
-                        COUCHBASE_CONFIG_USER,
-                        COUCHBASE_CONFIG_PASSWD,
-                        COUCHBASE_CONFIG_BUCKET);
-    return $oo;
-}
+require_once 'Util.php';
 
 class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
 {
@@ -58,6 +42,31 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
             $ret[$k] = $v;
         }
         return $ret;
+    }
+    
+    protected function getExtVersion() {
+        $version = couchbase_get_version();
+        $version = explode('.', $version);
+        for ($ii = 0; $ii < count($version); $ii++) {
+            $version[$ii] = intval($version[$ii]);
+        }
+        return $version;
+    }
+    
+    protected function atLeastVersion($varr) {
+        $version = $this->getExtVersion();
+        
+        $wantval = "";
+        $curval = "";
+        
+        for ($ii = 0; $ii < count($varr); $ii++) {
+            $wantval .= sprintf("%02d", $varr[$ii]);
+            $curval .= sprintf("%02d", $version[$ii]);
+        }
+        
+        $wantval = intval($wantval);
+        $curval = intval($curval);
+        return ($wantval <= $curval);
     }
 }
 

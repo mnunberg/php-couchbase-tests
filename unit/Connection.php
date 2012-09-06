@@ -53,7 +53,45 @@ class Connection extends CouchbaseTestCommon
         $this->assertInternalType('resource', $handle);
         $handle = new Couchbase($url);
         $this->assertInstanceOf('Couchbase', $handle);
+    }
+    
+    function testConnectBadUri() {
+        # PCBC-74
+        $url = "http://127.0.0.1:1";
+        $exmsg = NULL;
+        try {
+            $o = new Couchbase($url);
+        } catch (Exception $exc) {
+            $exmsg = $exc->getMessage();
+        }
+        # No segfaults? we're good!
+        $this->assertNotNull($exmsg);
+        $this->assertContains('Failed to connect', $exmsg);
         
+        # Try with a malformed uri
+        $exmsg = NULL;
+        try {
+            $url = "http://";
+            $o = new Couchbase($url);
+        } catch (Exception $exc) {
+            $exmsg = $exc->getMessage();
+        }
+        $this->assertNotNull($exmsg);
+        $this->assertContains('malformed', $exmsg);
+        
+        # try with an array.
+        if ($this->atLeastVersion(array(1,0,5))) {
+            $exmsg = NULL;
+            try {
+                $o = new Couchbase(
+                    array("http://127.0.0.1:1")
+                );
+            } catch (Exception $exc) {
+                $exmsg = $exc->getMessage();
+            }
+            $this->assertNotNull($exmsg);
+            $this->assertContains('Failed to connect', $exmsg);
+        }
     }
     
     function testConnectNodeArray() {

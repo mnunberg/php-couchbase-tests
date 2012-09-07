@@ -5,6 +5,8 @@
 			<file>MutateBasic.php</file>
 			<file>Arithmetic.php</file>
 			<file>EmptyKey.php</file>
+            <file>IntegerArgs.php</file>
+            <file>Expiry.php</file>
 			<file>MissCB.php</file>
 			<file>Errors.php</file>
 			<file>Delete.php</file>

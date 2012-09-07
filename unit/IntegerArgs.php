@@ -23,11 +23,17 @@ class IntegerArgs extends CouchbaseTestCommon {
                 
         $oo->delete($key);
         $this->assertEquals(COUCHBASE_SUCCESS,
-                            $oo->getResultCode);
+                            $oo->getResultCode());
         
         $oo->append($key, "_suffix");
         $this->assertEquals(COUCHBASE_NOT_STORED,
                             $oo->getResultCode());
+        
+        $cas = $oo->set($key, "some_value");
+        $this->assertNotEmpty($cas);
+        $ret = $oo->get("$key");
+        $this->assertEquals("some_value", $ret);
+        
     }
     
     // 029

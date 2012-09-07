@@ -109,6 +109,22 @@ class Connection extends CouchbaseTestCommon
         $this->assertInstanceOf('Couchbase', $cb);
     }
     
+    function testConnectDelimitedNodes() {
+        
+        $hosts = array('non-existent-host',
+                       'another-bogus-host',
+                       COUCHBASE_CONFIG_HOST);
+        
+        $host_str = implode(';', $hosts);
+        
+        $cb = new Couchbase($host_str,
+                            COUCHBASE_CONFIG_USER,
+                            COUCHBASE_CONFIG_PASSWD,
+                            COUCHBASE_CONFIG_BUCKET);
+        
+        $this->assertInstanceOf('Couchbase', $cb);
+    }
+    
     function testPersistentConnection() {
         # PCBC-75
         for ($ii = 0; $ii < 2; $ii++) {

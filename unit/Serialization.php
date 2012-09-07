@@ -118,6 +118,12 @@ class Serialization extends CouchbaseTestCommon {
         
         $this->assertEquals($ret, $value,
                             "Can use different flags for JSON and native PHP");
+        
+        couchbase_delete($h_json, $key);
+        $rv = couchbase_add($h_php, $key, $value);
+        $this->assertNotEmpty($rv);
+        $ret = couchbase_get($h_json, $key);
+        $this->assertEquals($value, $ret);
     }
     
     function testSerializeAppend() {

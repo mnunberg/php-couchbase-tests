@@ -39,4 +39,15 @@ which sets up the appropriate locations for finding the couchbase extension
 
 On Darwin/OS X systems, the environment variable is C<DYLD_LIBRARY_PATH>.
 
+=head2 Goodies
+
+There is a C<cbc>-like program located in C<utils>. Run
+    
+    ./pcbc help
+
+For more information.
+
+The C<EXTDIR> variable must be set for this program as well, as per the C<pwrap.sh> script
+
+
 M. Nunberg

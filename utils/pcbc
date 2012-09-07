@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use File::Basename qw(dirname);
+
+my $CMD = dirname(__FILE__) . "/_pcbc_real.php";
+
+my $basedir = $ENV{EXTDIR} or die "Must have php ext directory as EXTDIR";
+my $debugger = $ENV{DEBUGGER} || "";
+my $lcb_dir = $ENV{LCB_BASE};
+
+my @cmd = ("php",
+           "-d", "extension_dir=$basedir/modules",
+           "-d", "extension=couchbase.so",
+           "-d", "safe_mode=0",
+           $CMD,
+           @ARGV);
+
+print "@cmd\n";
+
+exec @cmd;

@@ -19,7 +19,10 @@ and run something like
     export EXTDIR
     export LD_LIBRARY_PATH
 
-	./pwrap.sh --debug -c test.xml
+	./runtest.pl --debug --process-isolation -c test.xml
+
+The C<process-isolation> flag runs each test in its own process. This is because
+some tests will segfault or otherwise lead to memory corruption.
 
 You need to have C<PHPUnit> installed for the new tests. Debian includes a C<phpunit>
 package. It can also be obtained via PEAR (see https://github.com/sebastianbergmann/phpunit#installation

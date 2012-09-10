@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use File::Path qw(rmtree mkpath);
+use File::Basename qw(basename);
+
+my $cbext_dir = $ENV{EXTDIR} or die "EXTDIR must be set!";
+my $sys_extdir = qx(php -r "echo ini_get('extension_dir');");
+my $ext = $cbext_dir . "/modules/couchbase.so";
+my $tmp_extdir = "_extdir_tmp";
+
+my $ini =  <<EOF;
+extension_dir=$tmp_extdir;
+extension=couchbase.so
+EOF
+
+
+rmtree($tmp_extdir);
+mkpath($tmp_extdir);
+
+my @orig_exts = glob("$sys_extdir/*");
+symlink($_, "$tmp_extdir/".basename($_)) foreach @orig_exts;
+symlink($ext, "$tmp_extdir/couchbase.so");
+
+my $tmpini = "$tmp_extdir/ini_tmp";
+open my $fh, ">", $tmpini or die "$tmpini: $!";
+
+print $fh $ini;
+
+close $fh;
+
+$ENV{PHPRC} = $tmpini;
+my $PHPUNIT=`which phpunit`;
+chomp($PHPUNIT);
+
+my @cmd = ("php", $PHPUNIT, @ARGV);
+if ($ENV{DEBUGGER}) {
+    unshift @cmd, split(' ', $ENV{DEBUGGER});
+}
+
+exec @cmd;

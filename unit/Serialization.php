@@ -4,7 +4,7 @@ class Serialization extends CouchbaseTestCommon {
     
     
     /**
-     * @test (private, compare standard types)
+     * @_test (private, compare standard types)
      * 
      * @pre Two objects, one is the original and one is a deserialized
      * return value.

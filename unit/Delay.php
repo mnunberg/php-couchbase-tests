@@ -20,8 +20,11 @@ class Delay extends CouchbaseTestCommon {
      * matches.
      */
     
+    // Need to unmark this as a test, (we should alias this),
+    // otherwise PHPUnit will try to run it..
+    
     /**
-     * @test
+     * @_test
      * Delay (Common)
      *
      * @pre
@@ -39,8 +42,8 @@ class Delay extends CouchbaseTestCommon {
      * matches the cas in <tt>$casvals[$key]</tt>
      */
     private function _xref_assert_common($casvals,
-                                         $keys,
-                                         $check_cas = false) {
+                                 $keys,
+                                 $check_cas = false) {
         global $values;
         $this->assertCount(10, $values);
         

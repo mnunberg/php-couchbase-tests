@@ -3,16 +3,7 @@
 This is an extensive testsuite for the PHP couchbase client. This is a
 work in progress to convert existing tests into the new format.
 
-=head2 Layout
-
-Currently there are tests in both C<tests> and C<unit>, where the former are the
-legacy phpt-style tests, and the latter are the new tests utilizing
-L<PHPUnit|https://github.com/sebastianbergmann/phpunit>
-
 =head2 Usage
-
-I removed the documentation for the phpt tests since they are wrong, and weird to
-set up.
 
 For the new-style tests, you should chdir into the C<unit> directory.
 You will need to edit the C<couchbase.local.inc> with your cluster parameters

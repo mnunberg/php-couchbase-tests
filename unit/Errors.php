@@ -5,6 +5,21 @@
 require_once 'Common.php';
 class Errors extends CouchbaseTestCommon {
     
+    /**
+     * @test Error Reporting
+     * @pre Perform various actions and see their error messages. Each action
+     * will inspect the get_result_code value as well as the
+     * get_result_message value
+     *
+     * @post
+     * get-non-exist: KEY_ENOENT/'No Such Key'.
+     * replace-non-exist: KEY_ENOENT.
+     * add-key: SUCCESS/'Success',
+     * delete-key: SUCCESS/'Success'.
+     * append-non-existent: NOT_STORED/'Not stored'.
+     * prepend-non-existent: NOT_STORED/'Not stored'.
+     * bad-cas: KEY_EEXISTS/'Key exists (with a different CAS value)'
+     */
     function testErrorCodes() {
         $key = $this->mk_key();
         $h = $this->handle;

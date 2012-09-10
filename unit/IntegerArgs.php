@@ -4,6 +4,22 @@ require_once 'Common.php';
 class IntegerArgs extends CouchbaseTestCommon {
     
     // 015
+    
+    /**
+     * @test
+     * Integer Conversion (Keys)
+     *
+     * @pre
+     * Create an integer key 88888. (ensure it is removed first).
+     * Get the key. Replace the key, Add the key, Delete the key,
+     * Append to the key, set the key to "foo", and retrieve the key
+     *
+     * @post
+     * Get => KEY_ENOENT, Replace => KEY_ENOENT, Add => Success,
+     * Delete => Success, Append => NOT_STORED, Set => Success.
+     * Final get on the string "88888" yields the value set
+     *
+     */
     function testIntKeyArgs() {
         $key = 888888;
         $oo = $this->oo;
@@ -37,6 +53,15 @@ class IntegerArgs extends CouchbaseTestCommon {
     }
     
     // 029
+    /**
+     * @test Integer Conversion (Values)
+     * 
+     * @pre Create a key, and store the number 642349292 as the value.
+     * Retrieve the key
+     * 
+     * @post Set operation succeeds.
+     * Get returns an integer type with the value 642349292
+     */
     function testIntValueArgs() {
         $key = $this->mk_key();
         $oo = $this->oo;

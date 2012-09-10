@@ -13,12 +13,21 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         $this->oo = make_handle_oo();
     }
     
+    /**
+     * Generate a new key which does not exist on the server (deleting as
+     * necessary)
+     *
+     * @return string key
+     */
     protected function mk_key() {
         $key = uniqid("couchbase_");
         $this->oo->delete($key);
         return $key;
     }
     
+    /**
+     * Returns a Couchbase resource
+     */
     protected function getPersistHandle() {
         if (!self::$_handle) {
             self::$_handle = make_handle();
@@ -26,6 +35,9 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         return self::$_handle;
     }
     
+    /**
+     * return a Couchbase handle
+     */
     protected function getPersistOO() {
         if (!self::$_oo) {
             print "Creating new handle\n";

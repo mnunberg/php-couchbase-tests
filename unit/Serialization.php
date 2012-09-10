@@ -3,6 +3,23 @@ require_once 'Common.php';
 class Serialization extends CouchbaseTestCommon {
     
     
+    /**
+     * @test (private, compare standard types)
+     * 
+     * @pre Two objects, one is the original and one is a deserialized
+     * return value.
+     *
+     * This function stores the given item in the cluster and retrives it.
+     * 
+     * @param $h the handle
+     * @param $k the key
+     * @param $v a complex object
+     * @param $tname the type name
+     *
+     * @post
+     * The stored and retrieved items are identical
+     *
+     */
     function _cmp_stdtypes($h, $k, $v, $tname) {
         couchbase_delete($h, $k);
         $rv = couchbase_add($h, $k, $v);
@@ -12,7 +29,18 @@ class Serialization extends CouchbaseTestCommon {
         $this->assertEquals($v, $ret, "Can deserialize " . $tname);
     }
     
-    # 023    
+    /**
+     * @test Basic Serialization
+     * @pre
+     * Test various input types, the types array, mixed-array, sequential array,
+     * empty array, NULL, TRUE, and FALSE are tested with @ref _cmp_stdtypes.
+     *
+     * An actual class instance is tested as well, but we cannot compare
+     * equality, only that they are of the same class
+     *
+     * @post all objects are equal as in the preconditon
+     */
+    
     function testSerializeBasic() {
         $h = $this->getPersistHandle();
         $value = array(1,2,3);
@@ -59,6 +87,18 @@ class Serialization extends CouchbaseTestCommon {
     }
     
     # 024
+    /**
+     * @test
+     * Test JSON Array Serialization
+     * 
+     * @pre Set the handle's serialization to @c COUCHBASE_SERIALIZER_JSON_ARRAY
+     * and store a mixed array. Retrieve it
+     * 
+     * @post
+     * @ref _cmp_stdtypes
+     *
+     * @todo This test was inherited. It makes little sense to me
+     */
     function testSerializeJsonArrayMixed() {
         if (!extension_loaded('json') ||
             !defined('COUCHBASE_SERIALIZER_JSON_ARRAY')) {
@@ -76,6 +116,12 @@ class Serialization extends CouchbaseTestCommon {
     }
     
     # 024
+    /**
+     * @test JSON Object Serialization
+     * @pre @ref testSerializeJsonArrayMixed
+     * @post expect @c stdClass instance
+     * @todo this makes little sense as well
+     */
     function testSerializeJsonObjectMixed() {
         
         if (!extension_loaded('json') ||
@@ -97,6 +143,22 @@ class Serialization extends CouchbaseTestCommon {
                                 "Return value is an object");
     }
     
+    
+    /**
+     * @test Test Mixed Serializers
+     * 
+     * @pre Create to handles, $h_php which is configured with SERIALIZER_PHP,
+     * and $h_json which is configured with SERIALIZER_JSON.
+     * Store an array(1,2,3) with $h_json, and retrieve it with $h_php.
+     * Do the reverse
+     *
+     * @post
+     * Values are all identical
+     *
+     * @remark
+     * Variants: OO
+     */
+
     function testMixedSerializationErrors() {
         $h_php = make_handle();
         $h_json = make_handle();
@@ -131,6 +193,18 @@ class Serialization extends CouchbaseTestCommon {
     }
     
     # 024
+    /**
+     * @test Serialization Options
+     * 
+     * @pre Create a handle. Set the serializer to PHP. Check the serialization
+     * value. Set the serializer to an invalid value
+     * 
+     * @post Changing the serializer to a valid serializer succeeds. Changing
+     * to an invalid serializer raising an error indicating such
+     *
+     * @remark
+     * Variants: OO
+     */
     function testSerializerOptions() {
         $h = make_handle();
         couchbase_set_option($h, COUCHBASE_OPT_SERIALIZER,

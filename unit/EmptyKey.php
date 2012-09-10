@@ -8,6 +8,25 @@ class EmptyKey extends CouchbaseTestCommon
 {
     /**
      * @dataProvider empty_key_functions
+     *
+     * @test Empty Keys
+     * 
+     * @pre
+     * 
+     * perform a mutation (the operation is passed as an argument to
+     * this function) operation with an empty key
+     *
+     * @post
+     * Error message indicating that an empty key was passed
+     *
+     * @param $fn The couchbase function to execute
+     * @param $params The params to pass to the function
+     * @param $do_skip Whether to not run the assertion. Needed for the
+     * *_multi functions.
+     *
+     *
+     * @remark
+     * Variants: Set, Add, Replace
      */
     public function testKeyEmpty($fn, $params, $do_skip = false) {
         $msg = NULL;
@@ -26,6 +45,7 @@ class EmptyKey extends CouchbaseTestCommon
         }
         $this->assertNotNull($msg, 'Got an exception for ' . $fn);
     }
+    
     
     public function empty_key_functions() {
         $ret = array();

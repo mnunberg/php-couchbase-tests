@@ -1,7 +1,34 @@
 <?php
 require_once 'Common.php';
 class Delete extends CouchbaseTestCommon {
+    
         /* superseds 008 */
+        
+    /**
+     * @test
+     * Delete
+     *
+     * @pre Add a key and delete it.
+     * @post Delete succeeds. Subsequent GET returns @c KEY_ENOENT
+     * 
+     * @remark
+     * Variants: OO
+     *
+     * @test
+     * Delete (with CAS)
+     *
+     * @pre Add a key, modify its value. Store the cas in each operation as an
+     * array of @c $cas. Delete using @c $cas[0], and then delete using
+     * @c $cas[1]
+     *
+     *
+     * @post
+     * Delete with the outdated @c $cas[0] fails, Delete with @c $cas[1]
+     * Succeeds
+     *
+     * @remark
+     * Variants: OO
+     */
     function testDeleteOO() {
         $key = $this->mk_key();
         $value = uniqid("couchbase_");

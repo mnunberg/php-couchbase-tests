@@ -8,6 +8,19 @@ class MutateBasic extends CouchbaseTestCommon
      * Supersedes 003
      */
     
+    /**
+     * All tests use new keys which have been previously removed. Thus it is
+     * assumed the key does not exist at test entry, unless otherwise noted 
+     */
+    
+    /**
+     * @test
+     *
+     * @pre add a key
+     * @post CAS return is not empty
+     * @remark
+     * Variants: OO
+     */
     function testAdd() {
         $key = $this->mk_key();
         $this->assertNotEmpty(
@@ -22,6 +35,30 @@ class MutateBasic extends CouchbaseTestCommon
     }
     
     /* supersedes 004 */
+    
+    /**
+     * @test
+     * Returned CAS
+     *
+     * @pre Set the same key value pair twice, save the CAS from both
+     * operations.
+     *
+     * @post
+     * CAS From both operations are not equal
+     *
+     * @test
+     * @remark
+     * Variants: OO
+     *
+     * @test Set with CAS
+     * @pre Set the same key (from previous test) twice, first with the
+     * first CAS received, second with the second CAS received
+     *
+     * @post First set fails, second set succeeds
+     *
+     * @remark
+     * Variants: OO, and using the @c cas() function ( @ref testCas )
+     */
     function testSetOO() {
         $key = $this->mk_key();
         $cas1 = $this->oo->set($key, "bar");

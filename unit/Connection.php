@@ -7,6 +7,20 @@ require_once 'Common.php';
 
 class Connection extends CouchbaseTestCommon
 {
+    /**
+     * @test
+     * Basic Connection
+     * 
+     * @test_action
+     * Connect using couchbase_connect to the specified bucket,
+     * host, and auth creds
+     *
+     * @test_expect
+     * newly initialized couchbase objects
+     *
+     * @remark
+     * Variants: OO (testConnectBasic), URI (testConnectUri)
+     */
     function testConnectBasic() {
         $handle = couchbase_connect(COUCHBASE_CONFIG_HOST,
                                     COUCHBASE_CONFIG_USER,
@@ -17,8 +31,17 @@ class Connection extends CouchbaseTestCommon
     }
     
     /**
+     * @test
+     * Connection (Failed Auth)
+     * 
      * We would like to be able to expect an exception, but this does not seem
      * possible currently.. (we don't have classes for exceptions)
+     *
+     * @test_action
+     * Connect with a bad username/password
+     * 
+     * @test_expect
+     * Appropriate error message
      */
     function testConnectBad() {
         $handle = NULL;
@@ -54,6 +77,21 @@ class Connection extends CouchbaseTestCommon
         $handle = new Couchbase($url);
         $this->assertInstanceOf('Couchbase', $handle);
     }
+    
+    /**
+     * @test
+     * Connection (Bad URI)
+     * 
+     * @test_action
+     * Connect using bad URIs for the clients to connect to
+     * 
+     * @test_expect
+     * error messages for each
+     * 
+     * @remarks
+     * Variants: bad host, malformed URI, array
+     * @bug PCBC-74
+     */
     
     function testConnectBadUri() {
         # PCBC-74
@@ -94,9 +132,23 @@ class Connection extends CouchbaseTestCommon
         }
     }
     
+    /**
+     * @test
+     * connection (Multi Node)
+     * 
+     * @pre
+     * create an array of three hostnames, first two are bogus, second is
+     * value. Pass the array to the ctor
+     *
+     * @post
+     * connection succeeds
+     *
+     * @remark
+     * Variants: semicolon-delimited nodes
+     */
     function testConnectNodeArray() {
         if (!$this->atLeastVersion(array(1,0,5))) {
-            return; // not implemented
+            return;
         }
         $hosts = array('non-existent-host',
                        'another-bogus-host',
@@ -125,8 +177,21 @@ class Connection extends CouchbaseTestCommon
         $this->assertInstanceOf('Couchbase', $cb);
     }
     
+    /**
+     * @test
+     * Test persistent connection feature
+     *
+     * @pre
+     * Create a connection, specifying 'true' for persistence. Create a second
+     * connection with the same paranmeters.
+     *
+     * @post
+     * no crashes
+     *
+     * @bug PCBC-75
+     * 
+     */
     function testPersistentConnection() {
-        # PCBC-75
         for ($ii = 0; $ii < 2; $ii++) {
             $o =  couchbase_connect(COUCHBASE_CONFIG_HOST,
                                 COUCHBASE_CONFIG_USER,

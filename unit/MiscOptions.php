@@ -2,6 +2,13 @@
 require_once 'Common.php';
 
 class MiscOptions extends CouchbaseTestCommon {
+    /**
+     * @test Invalid Options
+     * @pre set an invalid option @c 1111 to an invalid value @c 111
+     * @post Error is thrown
+     * @remark
+     * Variants: OO
+     */
     function testMiscOptions() {
         $h = $this->getPersistHandle();
         $oo = $this->getPersistOO();

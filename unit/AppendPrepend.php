@@ -2,6 +2,17 @@
 require_once 'Common.php';
 class AppendPrepend extends CouchbaseTestCommon {
         /* 014 */
+        
+    /**
+     * @test Append and Prepend
+     * @pre Set a key @c foo, prepend the prefix @c prefix_, append
+     * the suffix @c suffix_.
+     *
+     * @post Get the key. The key should now be @c prefix_foo_suffix
+     *
+     * @remark
+     * Variant: OO
+     */
     function testAppendPrependOO() {
         $key = $this->mk_key();
         $value = "foo";

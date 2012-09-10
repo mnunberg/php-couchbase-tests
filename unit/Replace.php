@@ -5,6 +5,20 @@ class Replace extends CouchbaseTestCommon {
     
     # 013
     
+    /**
+     * @test Replace
+     * 
+     * @pre
+     * Use replace to modify a non existent key.
+     * Set the key (via set), then replace it again
+     * 
+     * @post
+     * First replace fails.
+     * Second replace succeeds (with valid CAS return value)
+     *
+     * @remark
+     * Variants: OO
+     */
     function testReplaceOO() {
         $oo = $this->oo;
         $key = $this->mk_key();

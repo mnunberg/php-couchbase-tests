@@ -10,9 +10,9 @@ class EmptyKey extends CouchbaseTestCommon
      * @dataProvider empty_key_functions
      *
      * @test Empty Keys
-     * 
+     *
      * @pre
-     * 
+     *
      * perform a mutation (the operation is passed as an argument to
      * this function) operation with an empty key
      *
@@ -27,15 +27,17 @@ class EmptyKey extends CouchbaseTestCommon
      *
      * @remark
      * Variants: Set, Add, Replace
+     *
+     * @test_plans{2.1.3, 3.5}
      */
     public function testKeyEmpty($fn, $params, $do_skip = false) {
         $msg = NULL;
         $oo = $this->oo;
-        
+
         if ($do_skip) {
             $this->markTestSkipped("Skipping empty key test for " . $fn);
         }
-        
+
         try {
             call_user_method_array($fn, $oo, $params);
         } catch (Exception $exc) {
@@ -45,25 +47,25 @@ class EmptyKey extends CouchbaseTestCommon
         }
         $this->assertNotNull($msg, 'Got an exception for ' . $fn);
     }
-    
-    
+
+
     public function empty_key_functions() {
         $ret = array();
         array_push($ret, array('set', array('', 'foo')));
         array_push($ret, array('replace', array('', 'foo')));
         array_push($ret, array('add', array('', 'foo')));
         array_push($ret, array('get', array(''), true));
-        
+
         array_push($ret, array('getMulti',
             array(
                 array("")
             ), true));
-        
+
         array_push($ret, array('setMulti',
             array(
                 array('' => 2)
             ), true));
-        
+
         return $ret;
     }
 

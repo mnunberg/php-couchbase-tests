@@ -2,7 +2,7 @@
 require_once 'Common.php';
 class AppendPrepend extends CouchbaseTestCommon {
         /* 014 */
-        
+
     /**
      * @test Append and Prepend
      * @pre Set a key @c foo, prepend the prefix @c prefix_, append
@@ -12,6 +12,8 @@ class AppendPrepend extends CouchbaseTestCommon {
      *
      * @remark
      * Variant: OO
+     *
+     * @test_plans{2.6}
      */
     function testAppendPrependOO() {
         $key = $this->mk_key();
@@ -23,7 +25,7 @@ class AppendPrepend extends CouchbaseTestCommon {
         $this->assertEquals("prefix_$value" . "_suffix",
                             $oo->get($key));
     }
-    
+
     function testAppendPrepend() {
         $key = $this->mk_key();
         $value = "foo";
@@ -31,7 +33,7 @@ class AppendPrepend extends CouchbaseTestCommon {
         couchbase_add($h, $key, $value);
         couchbase_prepend($h, $key, "prefix_");
         couchbase_append($h, $key, "_suffix");
-        
+
         $this->assertEquals("prefix_$value" . "_suffix",
                             couchbase_get($h, $key));
     }

@@ -1,7 +1,7 @@
 <?php
 require_once 'Common.php';
 class ServerStats extends CouchbaseTestCommon {
-    
+
     # 012
     /**
      * @test Server Stats
@@ -15,5 +15,16 @@ class ServerStats extends CouchbaseTestCommon {
         $this->assertInternalType('array', $stats);
         $this->assertTrue(count($stats) > 0);
         $this->assertTrue(count(current($stats)) > 10);
+        /** @todo this shouldl also test for PCBC-115 */
+    }
+
+    function testVersion() {
+        $h = $this->getPersistOO();
+        $versions = $h->getVersion();
+        $this->assertInternalType('array', $versions);
+        foreach ($versions as $endpoint => $vers) {
+            $this->assertNotEmpty($endpoint);
+            $this->assertNotEmpty($vers);
+        }
     }
 }

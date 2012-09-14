@@ -7,12 +7,12 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
 {
     static $_handle = NULL;
     static $_oo = NULL;
-    
-    protected function setUp() {        
+
+    protected function setUp() {
         $this->handle = make_handle();
         $this->oo = make_handle_oo();
     }
-    
+
     /**
      * Generate a new key which does not exist on the server (deleting as
      * necessary)
@@ -24,7 +24,7 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         $this->oo->delete($key);
         return $key;
     }
-    
+
     /**
      * Returns a Couchbase resource
      */
@@ -34,7 +34,7 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         }
         return self::$_handle;
     }
-    
+
     /**
      * return a Couchbase handle
      */
@@ -45,7 +45,7 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         }
         return self::$_oo;
     }
-    
+
     protected function makeKvPairs($count = 10) {
         $ret = array();
         for ($ii = 0; $ii < $count; $ii++) {
@@ -55,27 +55,27 @@ class CouchbaseTestCommon extends PHPUnit_Framework_TestCase
         }
         return $ret;
     }
-    
+
     protected function getExtVersion() {
-        $version = couchbase_get_version();
+        $version = couchbase_get_client_version();
         $version = explode('.', $version);
         for ($ii = 0; $ii < count($version); $ii++) {
             $version[$ii] = intval($version[$ii]);
         }
         return $version;
     }
-    
+
     protected function atLeastVersion($varr) {
         $version = $this->getExtVersion();
-        
+
         $wantval = "";
         $curval = "";
-        
+
         for ($ii = 0; $ii < count($varr); $ii++) {
             $wantval .= sprintf("%02d", $varr[$ii]);
             $curval .= sprintf("%02d", $version[$ii]);
         }
-        
+
         $wantval = intval($wantval);
         $curval = intval($curval);
         return ($wantval <= $curval);

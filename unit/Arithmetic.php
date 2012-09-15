@@ -19,6 +19,7 @@ class Arithmetic extends CouchbaseTestCommon
      * Get returns the string "3". Decrement returns an integer 2, get
      * returns a string "2"
      *
+     * @test_plans{5.3, 5.4}
     */
     function testIncrDecrOO() {
         $oo = $this->getPersistOO();
@@ -78,7 +79,7 @@ class Arithmetic extends CouchbaseTestCommon
      *
      * @post
      * Error message indicating stored value is not numeric
-     *
+     * @test_plans{5.4}
      */
     function testIncrStringOO() {
         $key = $this->mk_key();
@@ -129,7 +130,7 @@ class Arithmetic extends CouchbaseTestCommon
      *
      * @post
      * error message indicating ENOENT
-     *
+     * @test_plans{5.1}
      */
     function testIncrDecrNonexistOO() {
         $key = $this->mk_key();

@@ -22,7 +22,7 @@ function another_cache_cb($res, $key, &$value) {
 }
 
 class MissCB extends CouchbaseTestCommon {
-    
+
     /**
      * @test Miss Callback (with Hit)
      *
@@ -37,7 +37,7 @@ class MissCB extends CouchbaseTestCommon {
      * Variants: OO
      *
      * @test Miss Callback (with Miss)
-     * 
+     *
      * @pre
      * Create a callback as in the hit test, get a
      * (non-existent) key, passing the callback to get
@@ -47,6 +47,8 @@ class MissCB extends CouchbaseTestCommon {
      *
      * @remark
      * Variants: OO
+     *
+     * @test_plans{3.2}
      */
     function testMissCbOO() {
         $key = $this->mk_key();
@@ -54,18 +56,18 @@ class MissCB extends CouchbaseTestCommon {
         $rv = $this->oo->get($key, "cache_cb", $cas);
         $this->assertNotEmpty($cas);
         $this->assertEquals('foo', $rv);
-        
+
         $this->oo->delete($key);
         $rv = $this->oo->get($key, "cache_cb", $cas);
         $this->assertNull($cas);
         $this->assertEquals("from_db", $rv);
-        
+
         $rv = $this->oo->get($key, "another_cache_cb", $cas);
         $this->assertNull($cas);
         $this->assertNull($rv,
                 "Return value is empty because function returned false");
     }
-    
+
     function testMissCb() {
         $key = $this->mk_key();
         $h = $this->handle;
@@ -73,12 +75,12 @@ class MissCB extends CouchbaseTestCommon {
         $rv = couchbase_get($h, $key, "cache_cb", $cas);
         $this->assertNotEmpty($cas);
         $this->assertEquals("foo", $rv, "Got value from cluster and not CB");
-        
+
         couchbase_delete($h, $key);
         $rv = couchbase_get($h, $key, "cache_cb", $cas);
         $this->assertNull($cas, "Cas not returned from callback");
         $this->assertEquals("from_db", $rv);
-        
+
         $rv = couchbase_get($h, $key, "another_cache_cb", $cas);
         $this->assertNull($cas);
         $this->assertNull($rv);

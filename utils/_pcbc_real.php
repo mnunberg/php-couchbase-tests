@@ -13,7 +13,8 @@ $options = getopt(
     "I:".
     "j".
     "e".
-    "F:"
+    "F:".
+    "z:"
 );
 
 $helpmsg = <<<EOF
@@ -50,7 +51,7 @@ Misc Options:
 
 EOF;
 
-foreach (array('h', 'u', 'p', 'b', 'k', 'v', 'C', 'E', 'I') as $k) {
+foreach (array('h', 'k', 'v', 'C', 'E', 'I', 'F', 'z') as $k) {
     if (!array_key_exists($k, $options)) {
         $options[$k] = '';
     }
@@ -69,14 +70,22 @@ $value = $options['v'];
 $arith_initial = $options['I'];
 $valfile = $options['F'];
 
+$use_compression = $options['z'];
 $do_eval = array_key_exists('e', $options);
 $use_json = array_key_exists('j', $options);
+
+$host = ";;;;non-existent-host;;$host;another-bogus-host;;;";
+
 $handle = new Couchbase($host, $username, $password, $bucket);
 
 if ($use_json) {
-    print "Using JSON for serialization..\n";
     $handle->setOption(COUCHBASE::OPT_SERIALIZER,
                        COUCHBASE::SERIALIZER_JSON);
+}
+
+if ($use_compression) {
+    ini_alter("couchbase.compression_threshold", $use_compression);
+    $handle->setOption(COUCHBASE_OPT_COMPRESSION, COUCHBASE_COMPRESSION_ZLIB);
 }
 
 if ($valfile) {
@@ -108,7 +117,7 @@ $is_ok = false;
 $ret = NULL;
 
 class CommandContext {
-    
+
     function __construct($handle, $key, $value, $exp, $cas, $initial) {
         $this->handle = $handle;
         $this->key = $key;
@@ -116,11 +125,11 @@ class CommandContext {
         $this->cas = $cas;
         $this->exp = $exp;
         $this->initial = $initial;
-        
+
         $this->r_cas = NULL;
         $this->r_value = NULL;
     }
-    
+
     function setResult($ok, $value, $cas = 0) {
         $this->r_value =  $value;
         $this->r_cas = $cas;
@@ -145,24 +154,24 @@ $cmdhandler['get'] = function($cmd, $ctx) {
 
 
 $cmdhandler['incr'] = function($cmd, $ctx) {
-    
+
     $value = intval($ctx->value);
     $do_create = 0;
     $arith_initial = 0;
-    
+
     if ($ctx->initial) {
         $do_create = 1;
         $arith_initial = intval($arith_initial);
     } else {
         $arith_initial = 0;
     }
-    
+
     $fn_name = ($cmd == "incr") ? "increment" : "decrement";
-    
+
     $retval = call_user_method($fn_name, $ctx->handle,
                                $ctx->$key, $value, $do_create,
                                $exp, $arith_initial);
-    
+
     $ctx->setResult(gettype($ret) == 'integer', $ret);
 };
 
@@ -179,7 +188,7 @@ $cmdhandler['set'] = function($cmd, $ctx) {
                                $ctx->value,
                                $ctx->exp,
                                $ctx->cas);
-    
+
     $ctx->setResult($retval, $ctx->value, $retval);
 };
 

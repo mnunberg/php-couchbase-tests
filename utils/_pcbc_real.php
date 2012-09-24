@@ -12,7 +12,8 @@ $options = getopt(
     "E:".
     "I:".
     "j".
-    "e"
+    "e".
+    "F:"
 );
 
 $helpmsg = <<<EOF
@@ -35,6 +36,7 @@ Key Options:
 
 Value Options:
     -e Evaluate the value (if present), thus "array(1,2,3)" is an array
+    -F Load value from this file
     -v <value>
     -I <initial-arithmetic-value>
 
@@ -65,6 +67,7 @@ $cas = $options['C'];
 $exp = $options['E'];
 $value = $options['v'];
 $arith_initial = $options['I'];
+$valfile = $options['F'];
 
 $do_eval = array_key_exists('e', $options);
 $use_json = array_key_exists('j', $options);
@@ -76,10 +79,17 @@ if ($use_json) {
                        COUCHBASE::SERIALIZER_JSON);
 }
 
+if ($valfile) {
+    $value = file_get_contents($valfile);
+    if (!$value) {
+        die("File does not exist or is empty");
+    }
+}
+
 if ($value && $do_eval) {
     $evalstr = "return $value;";
     $value = eval($evalstr);
-    //var_dump($value);
+    var_dump($value);
 }
 
 $cas = $cas ? $cas : 0;

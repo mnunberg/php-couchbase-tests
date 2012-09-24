@@ -16,6 +16,10 @@ my @cmd = ("php",
            $CMD,
            @ARGV);
 
+if ($debugger) {
+	unshift @cmd, $debugger;
+}
+
 print "@cmd\n";
 
 exec @cmd;

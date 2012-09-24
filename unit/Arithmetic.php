@@ -130,7 +130,7 @@ class Arithmetic extends CouchbaseTestCommon
      *
      * @post
      * error message indicating ENOENT
-     * @test_plans{5.1}
+     * @test_plans{5.1, 5.2}
      */
     function testIncrDecrNonexistOO() {
         $key = $this->mk_key();

@@ -19,7 +19,14 @@ rmtree($tmp_extdir);
 mkpath($tmp_extdir);
 
 my @orig_exts = glob("$sys_extdir/*");
-symlink($_, "$tmp_extdir/".basename($_)) foreach @orig_exts;
+
+foreach my $e (@orig_exts) {
+    if ($e =~ /couchbase\.so$/) {
+        next;
+    }
+    symlink($e, "$tmp_extdir/".basename($e));
+}
+
 symlink($ext, "$tmp_extdir/couchbase.so");
 
 my $tmpini = "$tmp_extdir/ini_tmp";

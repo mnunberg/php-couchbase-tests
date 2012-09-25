@@ -53,4 +53,49 @@ class Replace extends CouchbaseTestCommon {
         $val = couchbase_get($h, $key);
         $this->assertEquals("bar", $val);
     }
+
+    /**
+     * @test
+     * @pre Set a key, get its CAS, replace it using the cas received
+     * @post Replace succeeds. Get on the key now yields the value passed to
+     *  @c replace
+     *
+     * @test_plans{2.8.3}
+     */
+    function testReplaceCas() {
+        $oo = $this->getPersistOO();
+        $k = $this->mk_key();
+        $v = "a value..";
+
+        $cas = $oo->set($k, $v);
+        $this->assertNotEmpty($cas);
+
+        $v = "second value..";
+        $rv = $oo->replace($k, $v, $cas);
+        $this->assertNotEmpty($rv);
+
+        $ret = $oo->get($k);
+        $this->assertEquals($v, $ret);
+    }
+
+    /**
+     * @test
+     * @pre set a key, then replace it with a garbage cas ( @c 1234567 )
+     * @post Replace fails, getting the key yields the original value
+     * @test_plans{2.8.4}
+     */
+    function testReplaceInvalidCas() {
+        $k = $this->mk_key();
+        $v = "a value";
+        $oo = $this->getPersistOO();
+
+        $cas = $oo->set($k, $v);
+
+        $rv = $oo->replace($k, "shouldn't show", 0, 1);
+
+        $this->assertFalse($rv);
+
+        $ret = $oo->get($k);
+        $this->assertEquals($v, $ret);
+    }
 }

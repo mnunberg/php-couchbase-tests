@@ -38,4 +38,49 @@ class AppendPrepend extends CouchbaseTestCommon {
                             couchbase_get($h, $key));
     }
 
+    /**
+     * @test append to non-existing key
+     * @pre append to a non-exist key
+     * @post fails (false return), result code is @c NOT_STORED
+     * @test_plans{2.7}
+     */
+    function testAppendNonExist() {
+        $oo = $this->getPersistOO();
+        $k = $this->mk_key();
+        $rv = $oo->append($k, "this should never show");
+        $this->assertFalse($rv);
+        $this->assertEquals(COUCHBASE_NOT_STORED, $oo->getResultCode());
+    }
+
+    function testAppendCas() {
+        $oo = $this->getPersistOO();
+        $k = $this->mk_key();
+        $v = "initial value";
+
+        $cas = $oo->set($k, $v);
+        $this->assertNotEmpty($cas);
+
+
+        $suffix = "_appended";
+
+        $rv = $oo->append($k, "_appended", 0, $cas);
+        $this->assertNotEmpty($rv);
+
+        $ret = $oo->get($k);
+        $this->assertEquals($v.$suffix, $ret);
+    }
+
+    function testAppendInvalidCas() {
+        $oo = $this->getPersistOO();
+        $k = $this->mk_key();
+        $v = "initial_value";
+        $rv = $oo->set($k, $v);
+        $this->assertNotEmpty($rv);
+
+        $rv = $oo->append($k, "_suffix", 0, 1234566);
+        $this->assertFalse($rv);
+        $this->assertEquals(COUCHBASE_KEY_EEXISTS, $oo->getResultCode());
+        $ret = $oo->get($k);
+        $this->assertEquals($v, $ret);
+    }
 }

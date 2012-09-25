@@ -59,6 +59,16 @@ class Connection extends CouchbaseTestCommon
         }
 
         $this->assertNull($handle, "Bad connection parameters makes NULL handle");
+
+        try {
+            $handle = couchbase_connect(COUCHBASE_CONFIG_HOST,
+                                        COUCHBASE_CONFIG_USER,
+                                        COUCHBASE_CONFIG_PASSWD,
+                                        "non-existent-bucket....blah...");
+        } catch (Exception $exc) {
+
+        }
+        $this->assertNull($handle, "Invalid bucket OK");
     }
 
     /** @test_plans{1.1} */

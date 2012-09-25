@@ -75,4 +75,21 @@ class Delete extends CouchbaseTestCommon {
         $this->assertNull(couchbase_get($h, $key));
     }
 
+    /**
+     * @test Delete (non-exist)
+     * @pre Store a key, delete it once, delete it again
+     * @post First delete should return a value which is not false, second
+     * delete should return false
+     *
+     * @test_plans{7.2}
+     */
+    function testDeleteNonExist() {
+        $oo = $this->getPersistOO();
+        $k = $this->mk_key();
+        $this->assertNotEmpty($oo->set($k, 'me3h'));
+
+        $this->assertTrue((bool)$oo->delete($k));
+        $this->assertFalse($oo->delete($k));
+    }
+
 }

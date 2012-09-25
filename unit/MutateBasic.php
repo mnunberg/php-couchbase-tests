@@ -37,6 +37,22 @@ class MutateBasic extends CouchbaseTestCommon
                               "add (OO)");
     }
 
+    /**
+     * @test
+     * @pre add a key once, add it again
+     * @post second add fails with KEY_EEXISTS
+     * @test_plans{2.3}
+     */
+    function testAddExisting() {
+        $key = $this->mk_key();
+        $oo = $this->getPersistOO();
+        $this->assertNotEmpty($oo->add($key, "v1"));
+
+        $rv = $oo->add($key, "v2");
+        $this->assertFalse($rv);
+        $this->assertEquals(COUCHBASE_KEY_EEXISTS, $oo->getResultCode());
+    }
+
     /* supersedes 004 */
 
     /**

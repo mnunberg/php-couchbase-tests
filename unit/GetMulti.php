@@ -4,14 +4,20 @@ require_once 'Common.php';
 class GetMulti extends CouchbaseTestCommon
 {
 
+    public $iteration_count = 10;
     /**
      * Make key-value pairs and return them as an array. The keys
      * are guaranteed to have been removed
      *
      * @param $count the amount of key value pairs to generate
      */
-    function makeKvPairs($count = 10) {
+    function makeKvPairs($count = -1) {
         $ret = array();
+
+        if ($count == -1) {
+            $count = $this->iteration_count;
+        }
+
         for ($ii = 0; $ii < $count; $ii++) {
             $k = $this->mk_key();
             $v = uniqid("couchbase_value_");
@@ -46,7 +52,7 @@ class GetMulti extends CouchbaseTestCommon
         $oo = $this->oo;
         $keys = array();
         $cas = array();
-        $keys = $this->makeKvPairs(10);
+        $keys = $this->makeKvPairs();
 
         foreach ($keys as $k => $v) {
             $cas[$k] = $oo->set($k, $v);
@@ -76,7 +82,7 @@ class GetMulti extends CouchbaseTestCommon
         $keys = array();
         $cas = array();
 
-        $keys = $this->makeKvPairs(10);
+        $keys = $this->makeKvPairs();
 
         foreach ($keys as $k => $v) {
             $cas[$k] = couchbase_set($h, $k, $v);
@@ -145,10 +151,10 @@ class GetMulti extends CouchbaseTestCommon
      */
     function testSetMulti() {
         $h = $this->handle;
-        $values = $this->makeKvPairs(10);
+        $values = $this->makeKvPairs();
 
         $casrets = couchbase_set_multi($h, $values, 1);
-        $this->assertCount(10, $casrets);
+        $this->assertCount($this->iteration_count, $casrets);
 
         foreach ($casrets as $k => $cas) {
             $this->assertArrayHasKey($k, $values);
@@ -162,10 +168,10 @@ class GetMulti extends CouchbaseTestCommon
 
     function testSetMultiOO() {
         $oo = $this->oo;
-        $values = $this->makeKvPairs(10);
+        $values = $this->makeKvPairs();
         $casrets = $this->oo->setMulti($values, 1);
 
-        $this->assertCount(10, $casrets);
+        $this->assertCount($this->iteration_count, $casrets);
 
 
         # Cross-checking the arrays, PCBC-66
@@ -200,13 +206,61 @@ class GetMulti extends CouchbaseTestCommon
         # ensure keys are in order, if requested..
 
         $oo = $this->getPersistOO();
-        $values = $this->makeKvPairs(10);
+        $values = $this->makeKvPairs();
         $casrets = $oo->setMulti($values, 1);
         asort($values);
 
         $keys = array_keys($values);
         $res = $oo->getMulti($keys, $cas, Couchbase::GET_PRESERVE_ORDER);
         $this->assertEquals(serialize($values), serialize($res));
+    }
+
+
+    private function _ne_key_for_value($k) {
+        return "value_for_$k";
+    }
+
+    /**
+     * @test Test partial successes on multi get
+     *
+     * @pre
+     * Generate key value pairs, set half of them via @c set. Perform
+     * a @c getMulti on all the keys. Store the @c $existing keys in a separate
+     * array.
+     *
+     * @post
+     *
+     * All keys in the @c $existing array are accounted for in the @c getMulti
+     * return (with their values set)
+     */
+    function testMgetPartial() {
+        $oo = $this->getPersistOO();
+        $nkeys = $this->iteration_count;
+
+        $existing = array();
+        $keys = array();
+
+        for ($ii = 0; $ii < $nkeys; $ii++) {
+            $k = $this->mk_key();
+            if ($ii % 2) {
+                $v = $this->_ne_key_for_value($k);
+                $casret = $oo->set($k, $v);
+                $existing[$k] = $casret;
+            }
+            array_push($keys, $k);
+        }
+
+        $cas = array();
+        $values = $oo->getMulti($keys, $cas);
+        $this->assertCount(count(array_keys($existing)), $values);
+
+        foreach ($existing as $k => $v) {
+            $this->assertArrayHasKey($k, $values);
+            $this->assertEquals($this->_ne_key_for_value($k),
+                                $values[$k]);
+            $this->assertArrayHasKey($k, $cas);
+            $this->assertEquals($existing[$k], $cas[$k]);
+        }
     }
 
 }

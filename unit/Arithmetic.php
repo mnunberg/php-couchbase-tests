@@ -120,7 +120,10 @@ class Arithmetic extends CouchbaseTestCommon
      * Increment a key with an initial value of 2
      *
      * @post
-     * Return value is 2
+     * Return value is 2.
+     *
+     * @post
+     * GET on value yields the string @c '2'
      *
      * @test
      * Arithmetic (Non-Exist, No Initial)
@@ -130,7 +133,7 @@ class Arithmetic extends CouchbaseTestCommon
      *
      * @post
      * error message indicating ENOENT
-     * @test_plans{5.1, 5.2}
+     * @test_plans{5.1, 5.2, 5.7}
      */
     function testIncrDecrNonexistOO() {
         $key = $this->mk_key();
@@ -196,6 +199,64 @@ class Arithmetic extends CouchbaseTestCommon
         $rv = couchbase_decrement($h, $key, 20, 1, 0, 2);
         $this->assertEquals(2, $rv);
     }
+
+    /**
+     * @test Incr/Decr with custom offsets
+     *
+     * @pre Set a key to arithmetic 0, Call @c increment with an offset of @c 666
+     * @post Return value from increment is @c 666
+     *
+     * @pre Decrement the key using the offset @c 333
+     * @post Key is now @c 333 (return value)
+     *
+     * @pre Get the key via @c get
+     * @post Key is now @c '333'
+     *
+     * @test_plans{5.5}
+     */
+    function testCustomOffset() {
+        $key = $this->mk_key();
+        $oo = $this->getPersistOO();
+
+        $rv = $oo->increment($key, 0, true, NULL, 0);
+        $this->assertEquals(0, $rv);
+
+        $rv = $oo->increment($key, 666);
+        $this->assertEquals($rv, 666);
+
+        $rv = $oo->decrement($key, 333);
+        $this->assertEquals(333, $rv);
+
+        $this->assertEquals('333', $oo->get($key));
+    }
+
+    /**
+     * @test Arithmetic with expiration
+     * @pre Set a key to the value 100 (via arithmetic) with an expiry of 1.
+     * @post get the key, should be @c '100'
+     *
+     * @pre Wait two seconds, then get the key again
+     * @post Return value should be @c NULL
+     */
+    function testExpiry() {
+        $k = $this->mk_key();
+        $oo = $this->getPersistOO();
+
+        $rv = $oo->increment($k,
+                             $offset = 0,
+                             $create = true,
+                             $expire = 1,
+                             $initial_value = 100);
+
+        $this->assertEquals(100, $rv);
+
+        $this->assertEquals('100', $oo->get($k));
+        sleep(2);
+        $this->assertNull($oo->get($k));
+        $this->assertEquals(COUCHBASE_KEY_ENOENT,
+                            $oo->getResultCode());
+    }
+
 }
 
 ?>

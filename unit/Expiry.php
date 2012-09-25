@@ -13,6 +13,8 @@ class Expiry extends CouchbaseTestCommon {
      * @post First get should succeed, second should fail with @c ENOENT
      *
      * @test_plans{2.9.1}
+     *
+     * @group slow
      */
     function testExpirySetOO() {
         $oo = $this->oo;
@@ -32,6 +34,8 @@ class Expiry extends CouchbaseTestCommon {
      * @post Retrieval succeeds
      *
      * @test_plans{2.9.2}
+     *
+     * @group slow
      */
     function testExpirySetZeroOO() {
         $oo = $this->oo;
@@ -48,6 +52,8 @@ class Expiry extends CouchbaseTestCommon {
      *
      * @todo Not implemented in the client
      * @warning This feature is not implemented in the client
+     *
+     * @group slow
      */
     function testExpiryTouch() {
         $this->markTestSkipped("Touch not implemented");
@@ -66,6 +72,7 @@ class Expiry extends CouchbaseTestCommon {
     /**
      * @test Touch (zero expiry)
      * This is like @ref testExpirySetZeroOO
+     * @group slow
      */
     function textExpiryTouchZero() {
         $this->markTestSkipped("Touch not implemented");

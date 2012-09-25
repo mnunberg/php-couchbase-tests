@@ -4,6 +4,9 @@ require_once 'Common.php';
 require_once 'GetMulti.php';
 
 class BigValues extends CouchbaseTestCommon {
+    /**
+     * @group slow
+     */
     function testBigValue() {
         $k = $this->mk_key();
         $v = str_repeat("*", 0x1000000);

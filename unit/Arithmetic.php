@@ -237,6 +237,8 @@ class Arithmetic extends CouchbaseTestCommon
      *
      * @pre Wait two seconds, then get the key again
      * @post Return value should be @c NULL
+     *
+     * @group slow
      */
     function testExpiry() {
         $k = $this->mk_key();

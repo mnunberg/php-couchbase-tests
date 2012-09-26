@@ -30,7 +30,7 @@ class EmptyKey extends CouchbaseTestCommon
      *
      * @test_plans{2.1.3, 3.5}
      */
-    public function testKeyEmpty($fn, $params, $do_skip = false) {
+    private function _test_empty_common($fn, $params, $do_skip = false) {
         $msg = NULL;
         $oo = $this->oo;
 
@@ -39,7 +39,7 @@ class EmptyKey extends CouchbaseTestCommon
         }
 
         try {
-            call_user_method_array($fn, $oo, $params);
+            call_user_func_array( array(&$oo, $fn), $params);
         } catch (Exception $exc) {
             $msg = $exc->getMessage();
             $this->assertContains('Empty', $msg,
@@ -48,8 +48,7 @@ class EmptyKey extends CouchbaseTestCommon
         $this->assertNotNull($msg, 'Got an exception for ' . $fn);
     }
 
-
-    public function empty_key_functions() {
+    public function testEmptyKey() {
         $ret = array();
         array_push($ret, array('set', array('', 'foo')));
         array_push($ret, array('replace', array('', 'foo')));
@@ -66,7 +65,10 @@ class EmptyKey extends CouchbaseTestCommon
                 array('' => 2)
             ), true));
 
-        return $ret;
+
+        foreach ($ret as $params) {
+            call_user_func_array(array(&$this, "_test_empty_common"), $params);
+        }
     }
 
 
